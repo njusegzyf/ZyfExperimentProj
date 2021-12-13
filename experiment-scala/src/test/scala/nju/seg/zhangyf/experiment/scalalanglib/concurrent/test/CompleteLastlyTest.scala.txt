@@ -1,0 +1,49 @@
+package nju.seg.zhangyf.experimentscala.scalalanglibexamples.concurrent.test
+
+import scala.util.{ Failure, Success, Try }
+
+import java.nio.file.Files
+import java.util.NoSuchElementException
+import javax.annotation.ParametersAreNonnullByDefault
+
+import org.junit.runner.RunWith
+import org.scalatestplus.junit.JUnitRunner
+import org.scalatest.Assertion
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
+
+import nju.seg.zhangyf.experimentscala.scalalanglibexamples.concurrent.FutureCombinatorExample
+
+/** Tests for in method `testCompleteLastly` [[FutureCombinatorExample]].
+ *
+ * @author Zhang Yifan
+ */
+@ParametersAreNonnullByDefault
+@RunWith(classOf[JUnitRunner])
+final class CompleteLastlyTest extends AsyncFlatSpec with Matchers {
+
+  behavior of "CompleteLastly"
+
+  it should "do cleanup after the future returns a `Future`" in {
+    val (resFuture, tempFilePath) =
+      FutureCombinatorExample.testCompleteLastly[Assertion] { path =>
+        // ensure the temp file exists
+        assert(Files.exists(path)) // `scalatest.Assertion` is implicit convert to `Future[Assertion]`
+        // the above code will be expand to:
+        //    convertAssertionToFutureAssertion(assert(Files.exists(path))(org.scalactic.Prettifier.default, org.scalactic.source.Position.here))
+      }
+    resFuture map { (res: Assertion) =>
+      assert(Files.notExists(tempFilePath))
+    }
+  }
+
+  it should "rethrow if the Complete code an exception" in {
+    an[NoSuchElementException] should be thrownBy {
+      FutureCombinatorExample.testCompleteLastly[Assertion] { path =>
+        // ensure the temp file exists
+        assert(Files.exists(path)) // `scalatest.Assertion` is implicit convert to `Future[Assertion]`
+        throw new NoSuchElementException
+      }
+    }
+  }
+}

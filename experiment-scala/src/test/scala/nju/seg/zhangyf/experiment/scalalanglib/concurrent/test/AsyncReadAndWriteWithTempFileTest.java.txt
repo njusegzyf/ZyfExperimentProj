@@ -1,0 +1,47 @@
+package nju.seg.zhangyf.experimentscala.scalalanglibexamples.concurrent.test
+
+import scala.concurrent.{ Await, ExecutionContext, Future }
+import scala.concurrent.duration.Duration
+
+import javax.annotation.ParametersAreNonnullByDefault
+
+import org.junit.runner.RunWith
+import org.scalatestplus.junit.JUnitRunner
+import org.scalatest.Assertions
+import org.scalatest.flatspec.AsyncFlatSpec
+
+import nju.seg.zhangyf.experimentscala.scalalanglibexamples.concurrent.FutureCombinatorExample
+
+/**
+ * @author Zhang Yifan
+ */
+@ParametersAreNonnullByDefault
+@RunWith(classOf[JUnitRunner])
+final class AsyncReadAndWriteWithTempFileTest extends AsyncFlatSpec {
+
+  behavior of "testAsyncReadAndWriteWithTempFile1"
+
+  it should "succeed" in {
+    val resFuture: Future[Boolean] = FutureCombinatorExample.testAsyncReadAndWriteWithTempFile1()
+    resFuture map { res => assert(res) }
+  }
+
+  it should "succeed with global executor" in {
+    val executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+    val resFuture: Future[Boolean] = FutureCombinatorExample.testAsyncReadAndWriteWithTempFile1()(executor)
+      resFuture.map { res => assert(res) }(executor)
+  }
+
+  behavior of "testAsyncReadAndWriteWithTempFile2"
+
+  it should "succeed" in {
+    val resFuture: Future[Boolean] = FutureCombinatorExample.testAsyncReadAndWriteWithTempFile2()
+    resFuture map { res => assert(res) }
+  }
+
+  it should "succeed with global executor" in {
+    val executor: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+    val resFuture: Future[Boolean] = FutureCombinatorExample.testAsyncReadAndWriteWithTempFile2()(executor)
+      resFuture.map { res => assert(res) }(executor)
+  }
+}

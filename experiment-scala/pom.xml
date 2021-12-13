@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>nju.seg.zhangyf</groupId>
+    <artifactId>aggregatorExperiment</artifactId>
+    <version>0.1</version>
+  </parent>
+
+  <artifactId>experiment-scala</artifactId>
+
+  <properties>
+
+    <!--    <scala.langModule.version>2.0.0-M1</scala.langModule.version>-->
+    <!--    <scala.langModule.scope>compile</scala.langModule.scope>-->
+
+    <!--    <scalatest.version>3.3.0-SNAP2</scalatest.version>-->
+  </properties>
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+    <outputDirectory>target/classes</outputDirectory>
+    <testOutputDirectory>target/test-classes</testOutputDirectory>
+
+    <plugins>
+
+      <!-- The scala-maven-plugin (previously maven-scala-plugin) is used for compiling/testing/running/documenting scala code of any maven project. -->
+      <!-- @see [[https://davidb.github.io/scala-maven-plugin/]] -->
+      <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>${maven.plugin.scalaMaven.version}</version>
+
+        <executions>
+          <execution>
+            <id>scala-compile-first</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>add-source</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>scala-test-compile</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+
+        <configuration>
+          <scalaVersion>${scala.version}</scalaVersion>
+          <scalaCompatVersion>${scala.binaryVersion}</scalaCompatVersion>
+
+          <!-- @see [[https://docs.scala-lang.org/overviews/compiler-options/index.html Scala 2 compiler options]] -->
+          <!-- @see [[https://docs.scala-lang.org/scala3/guides/migration/options-new.html Scala 3 new compiler options]]         -->
+          <args>
+            <arg>-feature</arg> <!-- Emit warning and location for usages of features that should be imported explicitly. -->
+            <arg>-unchecked</arg> <!-- Enable additional warnings where generated code depends on assumptions. -->
+            <arg>-deprecation</arg> <!-- Emit warning and location for usages of deprecated APIs. -->
+            <!-- <arg>-no-specialization</arg> --> <!-- Ignore @specialize annotations. -->
+
+            <!-- Scala 3 compiler options -->
+            <arg>-explain-types</arg> <!-- Explain type errors in more detail. -->
+            <arg>-explain</arg> <!-- Explain errors in more detail. -->
+            <!-- <arg>-Yexplicit-nulls</arg> -->
+            <!-- Make reference types non-nullable. Nullable types can be expressed with unions: e.g. String|Null. -->
+          </args>
+
+          <javacArgs>
+            <javacArg>-source</javacArg>
+            <javacArg>${java.releaseVersion}</javacArg>
+            <javacArg>-target</javacArg>
+            <javacArg>${java.releaseVersion}</javacArg>
+          </javacArgs>
+
+          <recompileMode>all</recompileMode>
+
+          <excludes>
+            <exclude>module-info.java</exclude>
+          </excludes>
+        </configuration>
+
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala3-library_${scala.scala3.binaryVersion}</artifactId>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.scala-lang/scala3-compiler -->
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala3-compiler_${scala.scala3.binaryVersion}</artifactId>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.scala-lang/scala3-interfaces -->
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala3-interfaces</artifactId>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.scala-lang.modules/scala-java8-compat -->
+    <dependency>
+      <groupId>org.scala-lang.modules</groupId>
+      <artifactId>scala-java8-compat_${scala.binaryVersion}</artifactId>
+      <version>${scala.langModule.java8compat.version}</version>
+      <scope>${scala.langModule.scope}</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.scala-stm/scala-stm -->
+    <dependency>
+      <groupId>org.scala-stm</groupId>
+      <artifactId>scala-stm_${scala.binaryVersion}</artifactId>
+    </dependency>
+
+    <!-- Note: For Scala 2.12 and 2.13, use different versions of shapeless -->
+    <!-- https://mvnrepository.com/artifact/com.chuusai/shapeless -->
+    <!--    <dependency>-->
+    <!--      <groupId>com.chuusai</groupId>-->
+    <!--      <artifactId>shapeless_2.13</artifactId>-->
+    <!--      <version>2.3.3</version>-->
+    <!--      <exclusions>-->
+    <!--        <exclusion>-->
+    <!--          <groupId>org.scala-lang</groupId>-->
+    <!--          <artifactId>*</artifactId>-->
+    <!--        </exclusion>-->
+    <!--      </exclusions>-->
+    <!--    </dependency>-->
+
+    <!-- test libs (compile) -->
+    <!-- @note scalatest_3.0.0-M2 is not compatible with Scala 3.0.2 -->
+    <!-- https://mvnrepository.com/artifact/org.scalatest/scalatest_2.13 -->
+    <!--    <dependency>-->
+    <!--      <groupId>org.scalatest</groupId>-->
+    <!--      <artifactId>scalatest_3.0.0-M2</artifactId>  &lt;!&ndash; <artifactId>scalatest_${scala.binaryVersion}</artifactId> &ndash;&gt;-->
+    <!--      <version>3.3.0-SNAP3</version>-->
+    <!--      <scope>compile</scope>-->
+    <!--      <exclusions>-->
+    <!--        <exclusion>-->
+    <!--          <groupId>org.scala-lang</groupId>-->
+    <!--          <artifactId>*</artifactId>-->
+    <!--        </exclusion>-->
+    <!--        <exclusion>-->
+    <!--          <groupId>org.scala-lang.modules</groupId>-->
+    <!--          <artifactId>*</artifactId>-->
+    <!--        </exclusion>-->
+    <!--      </exclusions>-->
+    <!--    </dependency>-->
+
+  </dependencies>
+
+</project>
